@@ -6,45 +6,45 @@
 #    By: zweng <zweng@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/08/19 12:41:50 by zweng             #+#    #+#              #
-#    Updated: 2022/09/25 22:01:53 by zweng            ###   ########.fr        #
+#    Updated: 2022/11/02 14:44:14 by zweng            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 # ----- varaibles -----
 
-CC = gcc
-
-NAME = ft_nm
-
-LIB_PATH = libft
-
-LIB = $(LIB_PATH)/libft.a
-
+CC 			= gcc
+NAME 		= ft_nm
+LIB_PATH 	= libft
+LIB 		= $(LIB_PATH)/libft.a
 HEADER_PATH = includes $(LIB_PATH)/includes
-
-C_PATH = srcs
+C_PATH 		= srcs
+OBJ_PATH	= obj
 
 # ---------------- transformation ------------------ #
 
-HEADER = $(HEADER_PATH)/$(NAME).h 
+HEADER 		= $(HEADER_PATH)/$(NAME).h 
 
-CFILES = $(foreach D, $(C_PATH), $(wildcard $(D)/*.c))
+CFILES      = $(notdir $(foreach D, $(C_PATH), $(wildcard $(D)/*.c)))
 
-OBJS = $(patsubst %.c, %.o, $(CFILES))
+OBJS_NAME	= $(patsubst %.c, %.o, $(CFILES)) \
+	     	  $(patsubst %.c, %.o, $(LIBFILES))
+DFILES_NAME	= $(patsubst %.c, %.d, $(CFILES)) \
+			  $(patsubst %.c, %.d, $(LIBFILES))
 
-DFILES = $(patsubst %.c, %.d, $(CFILES))
 
-LDFLAGS = -L$(LIB_PATH)
+LDFLAGS 	= -L$(LIB_PATH) -lft 
 
-LDLIBS = -lft #-fsanitize=address
+DPFLAGS 	= -MD -MP
 
-DPFLAGS = -MD -MP
+CFLAGS 		=  -Wall -Wextra -Werror \
+			   $(foreach D, $(HEADER_PATH), -I$(D)) $(DPFLAGS)
 
-CFLAGS =  -Wall -Wextra -Werror $(foreach D, $(HEADER_PATH), -I$(D)) $(DPFLAGS)
+DEBUGF 		= -fsanitize=address -g
 
 # ----- part automatic -----
-#SRCS = $(addprefix $(SRC_PATH)/,$(SRC_NAME))
-#OBJS = $(addprefix $(OBJ_PATH)/,$(OBJ_NAME))
+SRCS = $(addprefix $(C_PATH)/,$(CFILES)) 
+OBJS = $(addprefix $(OBJ_PATH)/,$(OBJS_NAME))
+DFLS = $(addprefix $(OBJ_PATH)/,$(DFILES_NAME))
 
 # ----- Colors -----
 BLACK:="\033[1;30m"
@@ -60,27 +60,27 @@ EOC:="\033[0;0m"
 all: $(NAME)
 
 $(NAME): $(LIB) $(OBJS)
-	@$(CC) $(OBJS) $(LDFLAGS) $(LDLIBS) -o $@
+	@$(CC) $(OBJS) $(LDFLAGS) $(DEBUGF) -o $@
 	@printf $(GREEN)"$(NAME) Finish linking\n"$(EOC)
 
 $(LIB):
 	@make -C $(LIB_PATH) fclean && make -C $(LIB_PATH)
 
-%.o:%.c
+$(OBJ_PATH)/%.o:$(C_PATH)/%.c | $(OBJ_PATH)
 	@printf $(GREEN)"compiling %s\n"$(EOC) $@
 	@$(CC) $(CFLAGS) -o $@ -c $<
 
-dclean:
-	@rm -f $(DFILES)
-	@printf $(GREEN)"$(NAME) dclean\n"$(EOC)
+$(OBJ_PATH):
+	@mkdir $(OBJ_PATH) 2> /dev/null
 
-clean: dclean
-	@rm -f $(OBJS)
+clean: 
+	@rm -f $(OBJS) $(DFLS)
+	@rm -rf $(OBJ_PATH) 2> /dev/null
 	@printf $(GREEN)"$(NAME) clean\n"$(EOC)
 	@make -C $(LIB_PATH) clean
 
 
-fclean: clean dclean
+fclean: clean
 	@/bin/rm -f $(NAME)
 	@printf $(GREEN)"$(NAME) fclean\n"$(EOC)
 	@/bin/rm -f $(LIB)
@@ -94,4 +94,4 @@ norme:
 	@norminette $(SRCS)
 	@norminette $(HEADER_PATH)/*.h
 
-.PHONY: clean dclean fclean re norme all
+.PHONY: clean fclean re norme all
