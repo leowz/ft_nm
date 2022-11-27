@@ -6,11 +6,13 @@
 /*   By: zweng <zweng@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 12:23:00 by zweng             #+#    #+#             */
-/*   Updated: 2022/11/23 17:54:07 by zweng            ###   ########.fr       */
+/*   Updated: 2022/11/27 18:51:04 by zweng            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_nm.h"
+#include <string.h>
+#include <errno.h>
 
 static int  is_arg(const char *str)
 {
@@ -65,23 +67,27 @@ static int  ft_nm(const char *filename, t_param params)
     struct stat     statbuf;
     void            *file;
 
-    if((fd = open(av, O_RDONLY)) == -1)
+    if((fd = open(filename, O_RDONLY)) == -1)
         return error_msg("No Such file\n");
-    if (fstat(fd, &statbuf) == -1);
-        return error_msg_cleanup("fstat get file size failed\n", fd, NULL);
-    if (statebuf.st_size < sizeof(Elf32_Ehdr))
-        return error_msg_cleanup("file size too small\n", fd, NULL);
-    if ((file = mmap(NULL, statebuf.st_size, PROT_READ, MAP_PRIVATE, fd, 0))
+    if (fstat(fd, &statbuf) == -1)
+        return error_msg_cleanup("fstat get file size failed\n", fd, NULL, 0);
+    if (statbuf.st_size < 16)
+        return error_msg_cleanup("file size too small\n", fd, NULL, 0);
+    if ((file = mmap(NULL, statbuf.st_size, PROT_READ, MAP_PRIVATE, fd, 0))
             == MAP_FAILED)
-        return error_msg_cleanup("mmap failed\n", fd, NULL);
+    {
+        return error_msg_cleanup("mmap failed\n", fd, NULL, 0);
+    }
     if (!check_elf_ident(file, &arch, statbuf.st_size))
-        return error_msg_cleanup("mmap failed\n", fd, file);
+        return error_msg_cleanup("checked elf ident failed\n",
+                fd, file, statbuf.st_size);
     if (arch == ELFCLASS32)
         ret = ft_nm32(file, statbuf.st_size, params);
     else if (arch == ELFCLASS64)
         ret = ft_nm64(file, statbuf.st_size, params);
     else
-        ret = error_msg_cleanup("arch get failed\n", fd, file);
+        ret = error_msg_cleanup("arch get failed\n", fd, file,
+                statbuf.st_size);
     return (ret);
 }
 

@@ -6,7 +6,7 @@
 #    By: zweng <zweng@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/08/19 12:41:50 by zweng             #+#    #+#              #
-#    Updated: 2022/11/02 14:44:14 by zweng            ###   ########.fr        #
+#    Updated: 2022/11/27 18:58:16 by zweng            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,7 +14,7 @@
 
 CC 			= gcc
 NAME 		= ft_nm
-LIB_PATH 	= libft
+LIB_PATH 	= Libft
 LIB 		= $(LIB_PATH)/libft.a
 HEADER_PATH = includes $(LIB_PATH)/includes
 C_PATH 		= srcs
