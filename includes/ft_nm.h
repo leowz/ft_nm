@@ -6,7 +6,7 @@
 /*   By: zweng <zweng@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/13 17:08:48 by zweng             #+#    #+#             */
-/*   Updated: 2022/11/27 19:13:37 by zweng            ###   ########.fr       */
+/*   Updated: 2022/11/28 19:11:45 by zweng            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,12 @@
 # include <elf.h>
 
 # include <stdio.h>
+
+typedef struct {
+  char nmType;
+  char sectionName[31];
+} s_nmTypename;
+
 
 typedef enum    e_param {
     ARG_A = 1 << 0,
@@ -46,5 +52,7 @@ int             is_special_section_indice(uint16_t s_idx);
 int             error_msg(const char *str);
 int             error_msg_cleanup(const char *str, int fd,
                     void *file, size_t filesize);
+unsigned char   get_sym_type(const char *sname, int symbind,
+                int symtype, unsigned long addr);
 #endif
 
