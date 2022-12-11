@@ -6,7 +6,7 @@
 #    By: zweng <zweng@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/08/19 12:41:50 by zweng             #+#    #+#              #
-#    Updated: 2022/12/01 15:52:09 by vagrant          ###   ########.fr        #
+#    Updated: 2022/12/02 17:04:13 by zweng            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -42,18 +42,18 @@ CFLAGS 		=  $(foreach D, $(HEADER_PATH), -I$(D)) $(DPFLAGS) \
 DEBUGF 		= -fsanitize=address -g
 
 # ----- part automatic -----
-SRCS = $(addprefix $(C_PATH)/,$(CFILES)) 
-OBJS = $(addprefix $(OBJ_PATH)/,$(OBJS_NAME))
-DFLS = $(addprefix $(OBJ_PATH)/,$(DFILES_NAME))
+SRCS 		= $(addprefix $(C_PATH)/,$(CFILES)) 
+OBJS 		= $(addprefix $(OBJ_PATH)/,$(OBJS_NAME))
+DFLS 		= $(addprefix $(OBJ_PATH)/,$(DFILES_NAME))
 
 # ----- Colors -----
-BLACK:="\033[1;30m"
-RED:="\033[1;31m"
-GREEN:="\033[1;32m"
-PURPLE:="\033[1;35m"
-CYAN:="\033[1;36m"
-WHITE:="\033[1;37m"
-EOC:="\033[0;0m"
+BLACK		:="\033[1;30m"
+RED			:="\033[1;31m"
+GREEN		:="\033[1;32m"
+PURPLE		:="\033[1;35m"
+CYAN		:="\033[1;36m"
+WHITE		:="\033[1;37m"
+EOC			:="\033[0;0m"
 #  # ==================
 
 # ----- part rules -----
