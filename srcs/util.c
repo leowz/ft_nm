@@ -6,7 +6,7 @@
 /*   By: zweng <zweng@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/23 16:57:09 by zweng             #+#    #+#             */
-/*   Updated: 2022/12/11 19:34:54 by zweng            ###   ########.fr       */
+/*   Updated: 2022/12/14 16:40:54 by zweng            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,9 +29,9 @@ int check_elf_ident(char *file, unsigned char *arch, size_t size)
 int is_special_section_indice(uint16_t s_idx)
 {
     return (s_idx == SHN_LOPROC || s_idx == SHN_BEFORE || s_idx == SHN_AFTER ||
-            s_idx == SHN_UNDEF || s_idx == SHN_HIPROC || s_idx == SHN_LOOS ||
-            s_idx == SHN_HIOS || s_idx == SHN_ABS || s_idx == SHN_COMMON || 
-            s_idx == SHN_XINDEX || s_idx == SHN_HIRESERVE);
+            s_idx == SHN_HIPROC || s_idx == SHN_LOOS || s_idx == SHN_HIOS ||
+            s_idx == SHN_ABS || s_idx == SHN_COMMON || s_idx == SHN_XINDEX ||
+            s_idx == SHN_HIRESERVE);
 }
 
 static char     get_sym_type1(const char *symname, int symbind, int symtype,

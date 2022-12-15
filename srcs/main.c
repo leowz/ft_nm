@@ -6,7 +6,7 @@
 /*   By: zweng <zweng@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 12:23:00 by zweng             #+#    #+#             */
-/*   Updated: 2022/11/28 18:16:18 by zweng            ###   ########.fr       */
+/*   Updated: 2022/12/15 16:51:41 by zweng            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ static int  is_arg(const char *str)
         !ft_strncmp(str, "-p\0", 3));
 }
 
-/*static void print_params(t_param params)
+static void print_params(t_param params)
 {
     ft_printf("params: \n");
     ft_printf("-a: %d\n", (params & ARG_A) > 0);
@@ -30,7 +30,7 @@ static int  is_arg(const char *str)
     ft_printf("-r: %d\n", (params & ARG_R) > 0);
     ft_printf("-p: %d\n", (params & ARG_P) > 0);
     ft_printf("%d\n", params);
-}*/
+}
 
 static int  init_params(t_param *params, int ac, char **av)
 {

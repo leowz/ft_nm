@@ -6,7 +6,7 @@
 /*   By: zweng <zweng@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/13 17:08:48 by zweng             #+#    #+#             */
-/*   Updated: 2022/12/11 18:05:06 by zweng            ###   ########.fr       */
+/*   Updated: 2022/12/15 16:50:27 by zweng            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 # include "libft.h"
 # include "ft_printf.h"
+# include "ft_array.h"
 # include <sys/mman.h>
 # include <sys/stat.h>
 # include <fcntl.h>
@@ -23,11 +24,12 @@
 
 # include <stdio.h>
 
+# define HAS_ARG(x, y) ((x & y) > 0)
+
 typedef struct {
   char nmType;
   char sectionName[31];
 } s_nmTypename;
-
 
 typedef enum    e_param {
     ARG_A = 1 << 0,
@@ -39,8 +41,8 @@ typedef enum    e_param {
 
 typedef struct  s_symbol{
     unsigned char   type;
-    unsigned int    value;
     char            *name;
+    void            *symptr;
 }               t_symbol;
 
 /*
@@ -62,5 +64,7 @@ unsigned char   get_sym_type(const char *sname, int symbind,
                 int symtype, unsigned long addr);
 void            set_sym_arr(t_symbol *arr, unsigned int index,
                 unsigned int value, unsigned char type, char *name);
+int             itemcmp_desc(t_arritem *lhs, t_arritem *rhs);
+int             itemcmp_asc(t_arritem *lhs, t_arritem *rhs);
 #endif
 
