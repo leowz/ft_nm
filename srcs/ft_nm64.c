@@ -6,7 +6,7 @@
 /*   By: zweng <zweng@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/23 17:25:25 by zweng             #+#    #+#             */
-/*   Updated: 2022/12/15 17:03:42 by zweng            ###   ########.fr       */
+/*   Updated: 2022/12/15 17:17:36 by vagrant          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,14 +32,13 @@ static int  output_entry(t_symbol sym)
 
     value = ((Elf64_Sym *)sym.symptr)->st_value;
     if (!value)
-        ft_printf("%s %.1c %s\n", "                ", sym.type, sym.name);
+        ft_printf("%s %1c %s\n", "                ", sym.type, sym.name);
     else
-        ft_printf("%016x %.1c %s\n", value, sym.type, sym.name);
+        ft_printf("%016x %1c %s\n", value, sym.type, sym.name);
 }
 
 static void print_symbols(t_array *arr, t_param params)
 {
-    (void)params;
     int         i;
     t_symbol    *sym;
     t_arritem   *item;
@@ -61,9 +60,9 @@ static void print_symbols(t_array *arr, t_param params)
             if ((!is_special_section_indice(symptr->st_shndx) &&
                         ELF64_ST_TYPE(symptr->st_info) != STT_SECTION))
                 output_entry(*sym);
-        } else {
-           output_entry(*sym);
         }
+        else
+           output_entry(*sym);
         i++;
     }
 }
@@ -93,6 +92,7 @@ static int  handle_symtab(const void *file, size_t filesize, Elf64_Ehdr *ehdr,
     unsigned char   type;
     t_array         *sym_arr;
 
+    sym_arr = NULL;
     strtab_idx = shdrt[symtab_idx].sh_link;
     /* checks */
     if (sizeof(*symtab) != shdrt[symtab_idx].sh_entsize ||
@@ -110,7 +110,6 @@ static int  handle_symtab(const void *file, size_t filesize, Elf64_Ehdr *ehdr,
     symtab_len = ft_symtab_counter(shdrt[symtab_idx].sh_size,
             sizeof(*symtab));
     i = 1;
-    sym_arr = NULL;
     while (i < symtab_len)
     {
         name_idx = symtab[i].st_name;
@@ -126,7 +125,7 @@ static int  handle_symtab(const void *file, size_t filesize, Elf64_Ehdr *ehdr,
         i++;
     }
     print_symbols(sym_arr, params);
-    // free array and malloc
+    delete_array(&sym_arr);
     return (FUN_SUCS);
 }
 
