@@ -6,7 +6,7 @@
 /*   By: zweng <zweng@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/15 11:55:12 by zweng             #+#    #+#             */
-/*   Updated: 2022/12/15 17:45:46 by vagrant          ###   ########.fr       */
+/*   Updated: 2022/12/16 18:01:25 by zweng            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,17 +58,12 @@ static int item_cmp(t_arritem *lhs, t_arritem *rhs)
     cmp = strcmp_nocase(name1, name2);
     if (!cmp)
     {
-        if (sym2->type == 'W' && sym1->type == 'D' || sym2->type == 'T'
-                && sym1->type == 'W')
-        {
-            ft_printf("return -1 cmp: n1: %s, n2: %s, %d\n", name1, name2, cmp);
+        if ((sym2->type == 'W' && sym1->type == 'D'))
             return (-1);
-        }
+        else if ((sym2->type == 'D' && sym1->type == 'W'))
+            return (1);
         else
-        {
-            ft_printf("return - cmp: n1: %s, n2: %s, %d\n", name1, name2, cmp);
             return ((sym2->type - sym1->type));
-        }
     }
     return (cmp);
 }
