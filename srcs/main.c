@@ -6,7 +6,7 @@
 /*   By: zweng <zweng@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 12:23:00 by zweng             #+#    #+#             */
-/*   Updated: 2022/12/15 16:51:41 by zweng            ###   ########.fr       */
+/*   Updated: 2022/12/25 14:29:23 by zweng            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,7 +111,7 @@ int         main(int ac, char **av) {
             {
                 if (file_count > 1)
                     ft_printf("\n%s: \n", av[i]);
-                ret += ft_nm(av[i], params);
+                ret += FUN_EXT(ft_nm(av[i], params));
             }
             i++;
         }

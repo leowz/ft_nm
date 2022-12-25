@@ -6,7 +6,7 @@
 /*   By: zweng <zweng@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/23 17:25:25 by zweng             #+#    #+#             */
-/*   Updated: 2022/12/15 17:17:36 by vagrant          ###   ########.fr       */
+/*   Updated: 2022/12/25 16:51:44 by zweng            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,13 +28,14 @@ static unsigned int ft_symtab_counter(unsigned int total, unsigned int size)
 
 static int  output_entry(t_symbol sym)
 {
-    unsigned int    value; 
+    unsigned int	shndx, value; 
 
+    shndx = ((Elf64_Sym *)sym.symptr)->st_shndx;
     value = ((Elf64_Sym *)sym.symptr)->st_value;
-    if (!value)
-        ft_printf("%s %1c %s\n", "                ", sym.type, sym.name);
-    else
+    if (shndx != SHN_UNDEF)
         ft_printf("%016x %1c %s\n", value, sym.type, sym.name);
+    else
+        ft_printf("%s %1c %s\n", "                ", sym.type, sym.name);
 }
 
 static void print_symbols(t_array *arr, t_param params)
@@ -62,7 +63,9 @@ static void print_symbols(t_array *arr, t_param params)
                 output_entry(*sym);
         }
         else
+		{
            output_entry(*sym);
+		}
         i++;
     }
 }
@@ -94,7 +97,6 @@ static int  handle_symtab(const void *file, size_t filesize, Elf64_Ehdr *ehdr,
 
     sym_arr = NULL;
     strtab_idx = shdrt[symtab_idx].sh_link;
-    /* checks */
     if (sizeof(*symtab) != shdrt[symtab_idx].sh_entsize ||
         shdrt[symtab_idx].sh_link >= ehdr->e_shnum ||
         ehdr->e_shstrndx >= ehdr->e_shnum || 
@@ -103,7 +105,6 @@ static int  handle_symtab(const void *file, size_t filesize, Elf64_Ehdr *ehdr,
         filesize < shdrt[ehdr->e_shstrndx].sh_offset +
         shdrt[ehdr->e_shstrndx].sh_size)
         return error_msg("Bad symtab\n");
-    /* get addresses */
     strtab = (char *)(file + shdrt[strtab_idx].sh_offset);
     shstrtab = (char *)(file + shdrt[ehdr->e_shstrndx].sh_offset);
     symtab = (Elf64_Sym *)(file + shdrt[symtab_idx].sh_offset);
@@ -119,9 +120,18 @@ static int  handle_symtab(const void *file, size_t filesize, Elf64_Ehdr *ehdr,
             type = get_sym_type((shstrtab + shstrtabidx),
                     ELF64_ST_BIND(symtab[i].st_info),
                     ELF64_ST_TYPE(symtab[i].st_info), symtab[i].st_value);
-            name = strtab + name_idx;
+			if (ELF64_ST_TYPE(symtab[i].st_info) == STT_SECTION)
+				name = shstrtab + shstrtabidx;
+			else
+				name = strtab + name_idx;
             add_to_array(&sym_arr, type, name, symtab + i);
         }
+		else
+		{
+			type = 'a';
+			name = strtab + name_idx;
+            add_to_array(&sym_arr, type, name, symtab + i);
+		}
         i++;
     }
     print_symbols(sym_arr, params);
@@ -131,21 +141,16 @@ static int  handle_symtab(const void *file, size_t filesize, Elf64_Ehdr *ehdr,
 
 int         ft_nm64(const void *file, size_t size, t_param params)
 {
-    // ELF Header
     Elf64_Ehdr      *ehdr;
-    // ELF Section Header table
     Elf64_Shdr      *shdrt;
     unsigned int    i;
 
-    //ft_printf("file addr: %p\n", file);
     if (size < sizeof(*ehdr))
        return error_msg("File size too small\n");
     ehdr = (Elf64_Ehdr *)file;
     shdrt = (Elf64_Shdr *)(file + ehdr->e_shoff);
-    // check initial entry of section table, all fields to zero
     if (shdrt[0].sh_size != 0 && shdrt[0].sh_offset != 0)
         return error_msg("bad section table\n");
-    // check section header name string table
     if (ehdr->e_shstrndx >= ehdr->e_shnum ||
             shdrt[ehdr->e_shstrndx].sh_type != SHT_STRTAB)
         return error_msg("bad section table header\n");

@@ -6,7 +6,7 @@
 /*   By: zweng <zweng@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/15 11:55:12 by zweng             #+#    #+#             */
-/*   Updated: 2022/12/16 18:01:25 by zweng            ###   ########.fr       */
+/*   Updated: 2022/12/25 18:10:39 by zweng            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,16 +33,6 @@ static int strcmp_nocase(const char *s1, const char *s2)
            return (c1 - c2);
     }
     return (*s1 - *s2);
-}
-
-static int ft_islower(char c)
-{
-    return (c <= 'z' && c >= 'a');
-}
-
-static int ft_isupper(char c)
-{
-    return (c <= 'Z' && c >= 'A');
 }
 
 static int item_cmp(t_arritem *lhs, t_arritem *rhs)

@@ -6,7 +6,7 @@
 /*   By: zweng <zweng@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/23 16:57:09 by zweng             #+#    #+#             */
-/*   Updated: 2022/12/15 16:55:15 by vagrant          ###   ########.fr       */
+/*   Updated: 2022/12/25 18:19:48 by zweng            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,48 +34,56 @@ int is_special_section_indice(uint16_t s_idx)
             s_idx == SHN_HIRESERVE);
 }
 
-static char     get_sym_type1(const char *symname, int symbind, int symtype,
-        unsigned long addr)
+unsigned char   get_sym_type(const char *sname, int symbind, int symtype,
+		unsigned long addr)
 {
-
-}
-
-unsigned char   get_sym_type(const char *sname, int symbind, int symtype, unsigned long addr)
-{
-      int c = '.';
+      int c;
       int i;
-      s_nmTypename nmtype[15] = {
-      {'b', ".bss\0"},
-      {'t', ".text\0"},
-      {'t', ".init\0"},
-      {'t', ".fini\0"},
-      {'d', ".data\0"},
-      {'d', ".got.plt\0"},
-      {'d', ".init_array\0"},
-      {'d', ".dynamic\0"},
-      {'d', ".fini_array\0"},
-      {'r', ".rodata\0"},
-      {'r', ".eh_frame\0"},
-      {'r', ".eh_frame_hdr\0"},
-      {'r', ".gcc_except_table\0"},
-      {'r', ".interp\0"},
-      };
+      s_nmTypename nmtype[20] = {
+      {'b', ".bss"},
+      {'d', ".data"},
+      {'d', ".got"},
+      {'d', ".init_array"},
+      {'d', ".fini_array"},
+      {'d', ".dynamic"},
+      {'r', ".rodata"},
+      {'r', ".eh_frame"},
+      {'r', ".gcc_except_table"},
+      {'r', ".interp"},
+      {'r', ".note"},
+      {'r', ".dynsym"},
+      {'r', ".dynstr"},
+      {'r', ".gnu"},
+      {'r', ".rela"},
+      {'n', ".comment"},
+      {'t', ".text"},
+      {'t', ".init"},
+      {'t', ".fini"},
+      {'t', ".plt"},};
 
-  if (symbind == STB_WEAK)
-    return (('W' * (addr != 0) + 'w' * (!addr)) *
-            (symtype == STT_FUNC || symtype == STT_NOTYPE)) +
-           (('V' * (addr != 0) + 'v' * (!addr)) * (symtype == STT_OBJECT));
-  if (!*sname)
-    c = 'u';
-  else
-    for (i = 0; i < 15; i++) {
-      if (!ft_strncmp(sname, nmtype[i].sectionName,
-                      ft_strlen(nmtype[i].sectionName) + 1)) {
-        c = nmtype[i].nmType;
-        break;
-      }
-    }
-  if (c == '.')
-    if (!ft_strncmp(sname, ".rodata", 7)) c = 'r';
-  return ((c * (symbind == STB_LOCAL)) + ((c & '_') * (symbind == STB_GLOBAL)));
+	  c = get_default_type();
+	  if (symbind == STB_WEAK)
+		  return (('W' * (addr != 0) + 'w' * (!addr)) *
+				  (symtype == STT_FUNC || symtype == STT_NOTYPE)) +
+			  (('V' * (addr != 0) + 'v' * (!addr)) * (symtype == STT_OBJECT));
+	  if (!*sname)
+		  c = 'u';
+	  else
+	  {
+		  i = 0;
+		  while (i < 20)
+		  {
+			  if (!ft_strncmp(sname, nmtype[i].sectionName,
+						  ft_strlen(nmtype[i].sectionName)))
+			  {
+				  c = nmtype[i].nmType;
+				  break;
+			  }
+			  i++;
+		  }
+	  }
+	  if (c == '.' && !ft_strncmp(sname, ".rodata", 7))
+			  c = 'r';
+	  return ((c * (symbind == STB_LOCAL)) + ((c & '_') *
+				  (symbind == STB_GLOBAL)));
 }
