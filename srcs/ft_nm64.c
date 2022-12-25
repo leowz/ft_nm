@@ -6,7 +6,7 @@
 /*   By: zweng <zweng@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/23 17:25:25 by zweng             #+#    #+#             */
-/*   Updated: 2022/12/25 16:51:44 by zweng            ###   ########.fr       */
+/*   Updated: 2022/12/25 18:35:14 by zweng            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,9 +117,9 @@ static int  handle_symtab(const void *file, size_t filesize, Elf64_Ehdr *ehdr,
         if (symtab[i].st_shndx < ehdr->e_shnum)
         {
             shstrtabidx = shdrt[symtab[i].st_shndx].sh_name;
-            type = get_sym_type((shstrtab + shstrtabidx),
-                    ELF64_ST_BIND(symtab[i].st_info),
-                    ELF64_ST_TYPE(symtab[i].st_info), symtab[i].st_value);
+			type = get_sym_type((shstrtab + shstrtabidx),
+					ELF64_ST_BIND(symtab[i].st_info),
+					ELF64_ST_TYPE(symtab[i].st_info), symtab[i].st_value);
 			if (ELF64_ST_TYPE(symtab[i].st_info) == STT_SECTION)
 				name = shstrtab + shstrtabidx;
 			else
@@ -128,7 +128,6 @@ static int  handle_symtab(const void *file, size_t filesize, Elf64_Ehdr *ehdr,
         }
 		else
 		{
-			type = 'a';
 			name = strtab + name_idx;
             add_to_array(&sym_arr, type, name, symtab + i);
 		}
