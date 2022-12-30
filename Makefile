@@ -6,7 +6,7 @@
 #    By: zweng <zweng@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/08/19 12:41:50 by zweng             #+#    #+#              #
-#    Updated: 2022/12/25 17:59:29 by zweng            ###   ########.fr        #
+#    Updated: 2022/12/30 18:58:06 by zweng            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -104,9 +104,12 @@ apdiffy: $(NAME)
 	diff -y t1.my t1.nm
 
 adiffy: $(NAME)
-	./$(NAME) -a  $(NAME) > t1.my
-	nm -a  $(NAME) > t1.nm
+	./$(NAME) -a $(arg1) > t1.my
+	nm -a  $(arg1) > t1.nm
 	diff -y t1.my t1.nm
+
+test:
+	echo $(arg1)
 
 re: fclean all
 

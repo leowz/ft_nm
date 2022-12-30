@@ -6,7 +6,7 @@
 /*   By: zweng <zweng@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/23 16:57:09 by zweng             #+#    #+#             */
-/*   Updated: 2022/12/25 18:35:19 by zweng            ###   ########.fr       */
+/*   Updated: 2022/12/30 18:45:08 by zweng            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,16 @@ int is_special_section_indice(uint16_t s_idx)
             s_idx == SHN_HIPROC || s_idx == SHN_LOOS || s_idx == SHN_HIOS ||
             s_idx == SHN_ABS || s_idx == SHN_COMMON || s_idx == SHN_XINDEX ||
             s_idx == SHN_HIRESERVE);
+}
+
+unsigned char	get_ssi_type(unsigned int s_idx)
+{
+	if (s_idx == SHN_UNDEF)
+		return ('u');
+	if (s_idx == SHN_COMMON)
+		return ('c');
+	else
+		return ('a');
 }
 
 unsigned char   get_sym_type(const char *sname, int symbind, int symtype,
@@ -61,7 +71,6 @@ unsigned char   get_sym_type(const char *sname, int symbind, int symtype,
       {'t', ".fini"},
       {'t', ".plt"},};
 
-	  c = get_default_type();
 	  if (symbind == STB_WEAK)
 		  return (('W' * (addr != 0) + 'w' * (!addr)) *
 				  (symtype == STT_FUNC || symtype == STT_NOTYPE)) +

@@ -6,7 +6,7 @@
 /*   By: zweng <zweng@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/13 17:08:48 by zweng             #+#    #+#             */
-/*   Updated: 2022/12/25 18:20:12 by zweng            ###   ########.fr       */
+/*   Updated: 2022/12/30 18:45:37 by zweng            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,5 +67,6 @@ void            set_sym_arr(t_symbol *arr, unsigned int index,
 int             itemcmp_desc(t_arritem *lhs, t_arritem *rhs);
 int             itemcmp_asc(t_arritem *lhs, t_arritem *rhs);
 void            delete_array(t_array **arr);
+unsigned char	get_ssi_type(unsigned int s_idx);
 #endif
 
