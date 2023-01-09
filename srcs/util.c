@@ -6,7 +6,7 @@
 /*   By: zweng <zweng@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/23 16:57:09 by zweng             #+#    #+#             */
-/*   Updated: 2023/01/08 17:56:55 by zweng            ###   ########.fr       */
+/*   Updated: 2023/01/09 15:41:39 by zweng            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,55 +44,29 @@ unsigned char	get_ssi_type(unsigned int s_idx)
 		return ('a');
 }
 
-unsigned char   get_sym_type(const char *sname, int symbind, int symtype,
-		unsigned long addr)
+unsigned char   type_adjust(const char *sname, char type, unsigned int bind)
 {
-      int c;
-      int i;
-      s_nmTypename nmtype[20] = {
-      {'b', ".bss"},
-      {'d', ".data"},
-      {'d', ".got"},
-      {'d', ".init_array"},
-      {'d', ".fini_array"},
-      {'d', ".dynamic"},
-      {'r', ".rodata"},
-      {'r', ".eh_frame"},
-      {'r', ".gcc_except_table"},
-      {'r', ".interp"},
-      {'r', ".note"},
-      {'r', ".dynsym"},
-      {'r', ".dynstr"},
-      {'r', ".gnu"},
-      {'r', ".rela"},
-      {'n', ".comment"},
-      {'t', ".text"},
-      {'t', ".init"},
-      {'t', ".fini"},
-      {'t', ".plt"},};
+    char    c;
 
-	  if (symbind == STB_WEAK)
-		  return (('W' * (addr != 0) + 'w' * (!addr)) *
-				  (symtype == STT_FUNC || symtype == STT_NOTYPE)) +
-			  (('V' * (addr != 0) + 'v' * (!addr)) * (symtype == STT_OBJECT));
-	  if (!*sname)
-		  c = 'u';
-	  else
-	  {
-		  i = 0;
-		  while (i < 20)
-		  {
-			  if (!ft_strncmp(sname, nmtype[i].sectionName,
-						  ft_strlen(nmtype[i].sectionName)))
-			  {
-				  c = nmtype[i].nmType;
-				  break;
-			  }
-			  i++;
-		  }
-	  }
-	  if (c == '.' && !ft_strncmp(sname, ".rodata", 7))
-			  c = 'r';
-	  return ((c * (symbind == STB_LOCAL)) + ((c & '_') *
-				  (symbind == STB_GLOBAL)));
+    c = 0;
+    if (!ft_strncmp(sname, ".comment", ft_strlen(".comment")) || 
+            !ft_strncmp(sname, ".copyright", ft_strlen(".copyright")) ||
+            !ft_strncmp(sname, ".gnu_debug", ft_strlen(".gnu_debug")) ||
+            !ft_strncmp(sname, ".ident", ft_strlen(".ident")) ||
+            !ft_strncmp(sname, ".SUNW", ft_strlen(".SUNW")))
+        c = 'n';
+    if (!ft_strncmp(sname, ".debug_", ft_strlen(".debug_")))
+        c = 'N';
+    if (!ft_strncmp(sname, ".gnu.hash", ft_strlen(".gnu.hash")) ||
+            !ft_strncmp(sname, ".rodata", ft_strlen(".rodata")) ||
+            !ft_strncmp(sname, ".rela.plt", ft_strlen(".rela.plt")) ||
+            !ft_strncmp(sname, ".gnu.version_r", ft_strlen(".gnu.version_r")))
+    {
+        c = 'R';
+        if (bind == STB_LOCAL)
+            c += 32;
+    }
+    if (c)
+        return (c);
+    return (type);
 }

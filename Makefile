@@ -6,7 +6,7 @@
 #    By: zweng <zweng@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/08/19 12:41:50 by zweng             #+#    #+#              #
-#    Updated: 2022/12/30 18:58:06 by zweng            ###   ########.fr        #
+#    Updated: 2023/01/09 15:25:55 by vagrant          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -99,13 +99,13 @@ diff: $(NAME)
 	diff t1.my t1.nm
 
 apdiffy: $(NAME)
-	./$(NAME) -a -p $(NAME) > t1.my
-	nm -a -p $(NAME) > t1.nm
+	./$(NAME) -a $(NAME) > t1.my
+	nm -a $(NAME) > t1.nm
 	diff -y t1.my t1.nm
 
 adiffy: $(NAME)
-	./$(NAME) -a $(arg1) > t1.my
-	nm -a  $(arg1) > t1.nm
+	./$(NAME) ${arg1} $(arg2) > t1.my
+	nm ${arg1} $(arg2) > t1.nm
 	diff -y t1.my t1.nm
 
 test:

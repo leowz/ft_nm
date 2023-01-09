@@ -6,7 +6,7 @@
 /*   By: zweng <zweng@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/15 11:55:12 by zweng             #+#    #+#             */
-/*   Updated: 2022/12/25 18:10:39 by zweng            ###   ########.fr       */
+/*   Updated: 2023/01/09 14:53:34 by zweng            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,13 +48,25 @@ static int item_cmp(t_arritem *lhs, t_arritem *rhs)
     cmp = strcmp_nocase(name1, name2);
     if (!cmp)
     {
-        if ((sym2->type == 'W' && sym1->type == 'D'))
-            return (-1);
-        else if ((sym2->type == 'D' && sym1->type == 'W'))
-            return (1);
+        if (sym2->type == 'W' && sym1->type == 'D')
+            cmp = -1;
+        else if (sym2->type == 'D' && sym1->type == 'W')
+            cmp = 1;
+        else if (sym2->type == 't' && sym1->type == 'T')
+            cmp = -1;
+        else if (sym2->type == 'T' && sym1->type == 't')
+            cmp = 1;
+        else if (sym2->type == 'T' && sym1->type == 'W')
+            cmp = -1;
+        else if (sym2->type == 'W' && sym1->type == 'T')
+            cmp = 1;
         else
-            return ((sym2->type - sym1->type));
+            cmp = ((sym2->type - sym1->type));
     }
+    if (!cmp)
+        cmp = ft_strlen(name1) - ft_strlen(name2);
+    if (!cmp)
+        cmp = *name1 - *name2;
     return (cmp);
 }
 

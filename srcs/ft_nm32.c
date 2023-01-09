@@ -6,7 +6,7 @@
 /*   By: zweng <zweng@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/23 17:25:25 by zweng             #+#    #+#             */
-/*   Updated: 2022/12/30 18:49:34 by zweng            ###   ########.fr       */
+/*   Updated: 2023/01/09 16:29:01 by zweng            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,16 +56,23 @@ static void print_symbols(t_array *arr, t_param params)
         item = ft_arritem_at(arr, i);
         sym = item->content;
         symptr = sym->symptr;
-        if (!HAS_ARG(params, ARG_A))
+        if (HAS_ARG(params, ARG_U))
         {
-            if ((!is_special_section_indice(symptr->st_shndx) &&
-                        ELF32_ST_TYPE(symptr->st_info) != STT_SECTION))
+            if (symptr->st_shndx == SHN_UNDEF) 
                 output_entry(*sym);
         }
+        else if (HAS_ARG(params, ARG_G))
+        {
+            if ( ELF32_ST_BIND(symptr->st_info) == STB_GLOBAL ||
+                    ELF32_ST_BIND(symptr->st_info) == STB_WEAK)
+                output_entry(*sym);
+        }
+        else if (HAS_ARG(params, ARG_A))
+            output_entry(*sym);
         else
-		{
-           output_entry(*sym);
-		}
+            if ((!is_special_section_indice(symptr->st_shndx) &&
+                        ELF64_ST_TYPE(symptr->st_info) != STT_SECTION))
+                output_entry(*sym);
         i++;
     }
 }
@@ -115,17 +122,14 @@ static int  handle_symtab(const void *file, size_t filesize, Elf32_Ehdr *ehdr,
     {
         name_idx = symtab[i].st_name;
 		name = strtab + name_idx;
+		type = get_sym_type32(ehdr, shdrt, symtab[i]);
         if (symtab[i].st_shndx < ehdr->e_shnum)
         {
             shstrtabidx = shdrt[symtab[i].st_shndx].sh_name;
-			type = get_sym_type((shstrtab + shstrtabidx),
-					ELF32_ST_BIND(symtab[i].st_info),
-					ELF32_ST_TYPE(symtab[i].st_info), symtab[i].st_value);
 			if (ELF32_ST_TYPE(symtab[i].st_info) == STT_SECTION)
 				name = shstrtab + shstrtabidx;
         }
-		else
-			type = get_ssi_type(symtab[i].st_shndx);
+        type = type_adjust(name, type, ELF32_ST_BIND(symtab[i].st_info));
         add_to_array(&sym_arr, type, name, symtab + i);
         i++;
     }

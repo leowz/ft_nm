@@ -6,7 +6,7 @@
 /*   By: zweng <zweng@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/13 17:08:48 by zweng             #+#    #+#             */
-/*   Updated: 2022/12/30 18:45:37 by zweng            ###   ########.fr       */
+/*   Updated: 2023/01/09 16:40:10 by zweng            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,11 +26,6 @@
 
 # define HAS_ARG(x, y) ((x & y) > 0)
 
-typedef struct {
-  char nmType;
-  char sectionName[31];
-} s_nmTypename;
-
 typedef enum    e_param {
     ARG_A = 1 << 0,
     ARG_G = 1 << 1,
@@ -44,13 +39,11 @@ typedef struct  s_symbol{
     char            *name;
     void            *symptr;
 }               t_symbol;
-
 /*
  *
  */
 int             ft_nm32(const void *file, size_t size, t_param params);
 int             ft_nm64(const void *file, size_t size, t_param params);
-
 /*
  *
  * helper functions
@@ -60,13 +53,15 @@ int             is_special_section_indice(uint16_t s_idx);
 int             error_msg(const char *str);
 int             error_msg_cleanup(const char *str, int fd,
                     void *file, size_t filesize);
-unsigned char   get_sym_type(const char *sname, int symbind,
-                int symtype, unsigned long addr);
 void            set_sym_arr(t_symbol *arr, unsigned int index,
                 unsigned int value, unsigned char type, char *name);
 int             itemcmp_desc(t_arritem *lhs, t_arritem *rhs);
 int             itemcmp_asc(t_arritem *lhs, t_arritem *rhs);
 void            delete_array(t_array **arr);
-unsigned char	get_ssi_type(unsigned int s_idx);
+unsigned int	get_sym_type64(Elf64_Ehdr *ehdr, Elf64_Shdr *shdrt,
+                Elf64_Sym cur_sym);
+unsigned int	get_sym_type32(Elf32_Ehdr *ehdr, Elf32_Shdr *shdrt,
+                Elf32_Sym cur_sym);
+unsigned char   type_adjust(const char *sname, char type, unsigned int bind);
 #endif
 
