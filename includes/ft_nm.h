@@ -6,7 +6,7 @@
 /*   By: zweng <zweng@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/13 17:08:48 by zweng             #+#    #+#             */
-/*   Updated: 2023/01/09 16:40:10 by zweng            ###   ########.fr       */
+/*   Updated: 2023/01/09 17:24:05 by zweng            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,8 @@ int             ft_nm64(const void *file, size_t size, t_param params);
  *
  * helper functions
  */
-int             check_elf_ident(char *file, unsigned char *arch, size_t size);
+int             check_elf_ident(char *file, unsigned char *arch, size_t size,
+                unsigned char *data);
 int             is_special_section_indice(uint16_t s_idx);
 int             error_msg(const char *str);
 int             error_msg_cleanup(const char *str, int fd,

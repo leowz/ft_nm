@@ -6,7 +6,7 @@
 /*   By: zweng <zweng@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/23 17:25:25 by zweng             #+#    #+#             */
-/*   Updated: 2023/01/09 16:29:01 by zweng            ###   ########.fr       */
+/*   Updated: 2023/01/09 17:11:38 by zweng            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,6 +118,7 @@ static int  handle_symtab(const void *file, size_t filesize, Elf32_Ehdr *ehdr,
     symtab_len = ft_symtab_counter(shdrt[symtab_idx].sh_size,
             sizeof(*symtab));
     i = 1;
+    ft_printf("check1\n");
     while (i < symtab_len)
     {
         name_idx = symtab[i].st_name;
@@ -138,6 +139,16 @@ static int  handle_symtab(const void *file, size_t filesize, Elf32_Ehdr *ehdr,
     return (FUN_SUCS);
 }
 
+unsigned int getInt(char *bytes, int num)
+{
+    int ret;
+    ret = bytes[0] << 24;
+    ret |= bytes[1] << 16;
+    ret |= bytes[2] << 8;
+    ret |= bytes[3];
+    return ret;
+}
+
 int         ft_nm32(const void *file, size_t size, t_param params)
 {
     Elf32_Ehdr      *ehdr;
@@ -146,14 +157,19 @@ int         ft_nm32(const void *file, size_t size, t_param params)
 
     if (size < sizeof(*ehdr))
        return error_msg("File size too small\n");
+    ft_printf("enter ft_nm32\n");
     ehdr = (Elf32_Ehdr *)file;
+    ft_printf("e_shoff %u %u\n", getInt((char *)&ehdr->e_shoff, 4), getInt((char *)&ehdr->e_phoff, 4));
     shdrt = (Elf32_Shdr *)(file + ehdr->e_shoff);
+    ft_printf("before if\n");
     if (shdrt[0].sh_size != 0 && shdrt[0].sh_offset != 0)
         return error_msg("bad section table\n");
+    ft_printf("before if2\n");
     if (ehdr->e_shstrndx >= ehdr->e_shnum ||
             shdrt[ehdr->e_shstrndx].sh_type != SHT_STRTAB)
         return error_msg("bad section table header\n");
     i = 0;
+    ft_printf("before while\n");
     while (i < ehdr->e_shnum)
     {
        if (shdrt[i].sh_name > shdrt[ehdr->e_shstrndx].sh_size)

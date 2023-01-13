@@ -6,17 +6,19 @@
 /*   By: zweng <zweng@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/23 16:57:09 by zweng             #+#    #+#             */
-/*   Updated: 2023/01/09 15:41:39 by zweng            ###   ########.fr       */
+/*   Updated: 2023/01/09 17:23:30 by zweng            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_nm.h"
 
-int check_elf_ident(char *file, unsigned char *arch, size_t size)
+int check_elf_ident(char *file, unsigned char *arch, size_t size,
+        unsigned char *data)
 {
     if (size < 16)
         return (FUN_FAIL);
     *arch = file[EI_CLASS];
+    *data = file[EI_DATA];
     if (ft_memcmp(file, ELFMAG, SELFMAG) != 0 || 
             file[EI_CLASS] <= 0 || file[EI_CLASS] > 2 ||
             file[EI_DATA] <= 0 || file[EI_DATA] > 2 ||
