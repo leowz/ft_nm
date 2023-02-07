@@ -6,7 +6,7 @@
 /*   By: zweng <zweng@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/08 16:02:47 by zweng             #+#    #+#             */
-/*   Updated: 2023/01/09 15:56:47 by zweng            ###   ########.fr       */
+/*   Updated: 2023/02/07 17:42:16 by vagrant          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,19 +15,20 @@
 static unsigned int	get_sym_type_suite_2(Elf64_Ehdr *ehdr, Elf64_Shdr *shdrt,
 		Elf64_Sym cur_sym)
 {
-	unsigned int	c, bind, type;
+	unsigned int	c, bind;
 	Elf64_Shdr		cur_shdr;
+    uint16_t        st_shndx;
 
 	bind = ELF64_ST_BIND(cur_sym.st_info);
-	type = ELF64_ST_TYPE(cur_sym.st_info);
-	cur_shdr = shdrt[cur_sym.st_shndx];
-    if (shdrt[cur_sym.st_shndx].sh_type == SHT_PROGBITS &&
-            shdrt[cur_sym.st_shndx].sh_flags == (SHF_ALLOC | SHF_WRITE))
+    st_shndx = read_uint16(cur_sym.st_shndx);
+	cur_shdr = shdrt[st_shndx];
+    if (shdrt[st_shndx].sh_type == SHT_PROGBITS &&
+            shdrt[st_shndx].sh_flags == (SHF_ALLOC | SHF_WRITE))
         c = 'D';
-    else if (shdrt[cur_sym.st_shndx].sh_type == SHT_PROGBITS &&
-            shdrt[cur_sym.st_shndx].sh_flags == (SHF_ALLOC | SHF_EXECINSTR))
+    else if (shdrt[st_shndx].sh_type == SHT_PROGBITS &&
+            shdrt[st_shndx].sh_flags == (SHF_ALLOC | SHF_EXECINSTR))
         c = 'T';
-    else if (shdrt[cur_sym.st_shndx].sh_type == SHT_DYNAMIC)
+    else if (shdrt[st_shndx].sh_type == SHT_DYNAMIC)
         c = 'D';
 	else
 		c = ('t' - 32);
@@ -39,30 +40,32 @@ static unsigned int	get_sym_type_suite_2(Elf64_Ehdr *ehdr, Elf64_Shdr *shdrt,
 static unsigned int	get_sym_type_suite(Elf64_Ehdr *ehdr, Elf64_Shdr *shdrt,
 		Elf64_Sym cur_sym)
 {
-	unsigned int	c, bind, type;
+	unsigned int	c, bind;
 	Elf64_Shdr		cur_shdr;
+    uint16_t        st_shndx, e_shnum;
 
 	bind = ELF64_ST_BIND(cur_sym.st_info);
-	type = ELF64_ST_TYPE(cur_sym.st_info);
+    st_shndx = read_uint16(cur_sym.st_shndx);
+    e_shnum = read_uint16(ehdr->e_shnum);
 	if (cur_sym.st_shndx == SHN_ABS)
 		c = 'A';
 	else if (cur_sym.st_shndx == SHN_COMMON)
 		c = 'C';
-	else if (cur_sym.st_shndx < ehdr->e_shnum)
+	else if (st_shndx < e_shnum)
     {
-	    if (shdrt[cur_sym.st_shndx].sh_type == SHT_NOBITS &&
-            shdrt[cur_sym.st_shndx].sh_flags == (SHF_ALLOC | SHF_WRITE))
+	    if (shdrt[st_shndx].sh_type == SHT_NOBITS &&
+            shdrt[st_shndx].sh_flags == (SHF_ALLOC | SHF_WRITE))
             c = 'B';
-        else if ((shdrt[cur_sym.st_shndx].sh_type == SHT_PROGBITS ||
-            shdrt[cur_sym.st_shndx].sh_type == SHT_RELA ||
-            shdrt[cur_sym.st_shndx].sh_type == SHT_REL ||
-            shdrt[cur_sym.st_shndx].sh_type == SHT_HASH ||
-            shdrt[cur_sym.st_shndx].sh_type == SHT_GNU_versym ||
-            shdrt[cur_sym.st_shndx].sh_type == SHT_GNU_verdef ||
-            shdrt[cur_sym.st_shndx].sh_type == SHT_STRTAB ||
-            shdrt[cur_sym.st_shndx].sh_type == SHT_DYNSYM ||
-            shdrt[cur_sym.st_shndx].sh_type == SHT_NOTE)
-            && shdrt[cur_sym.st_shndx].sh_flags == SHF_ALLOC)
+        else if ((shdrt[st_shndx].sh_type == SHT_PROGBITS ||
+            shdrt[st_shndx].sh_type == SHT_RELA ||
+            shdrt[st_shndx].sh_type == SHT_REL ||
+            shdrt[st_shndx].sh_type == SHT_HASH ||
+            shdrt[st_shndx].sh_type == SHT_GNU_versym ||
+            shdrt[st_shndx].sh_type == SHT_GNU_verdef ||
+            shdrt[st_shndx].sh_type == SHT_STRTAB ||
+            shdrt[st_shndx].sh_type == SHT_DYNSYM ||
+            shdrt[st_shndx].sh_type == SHT_NOTE)
+            && shdrt[st_shndx].sh_flags == SHF_ALLOC)
         c = 'R';
         else
             return (get_sym_type_suite_2(ehdr, shdrt, cur_sym));

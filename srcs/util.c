@@ -6,7 +6,7 @@
 /*   By: zweng <zweng@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/23 16:57:09 by zweng             #+#    #+#             */
-/*   Updated: 2023/02/07 16:42:15 by zweng            ###   ########.fr       */
+/*   Updated: 2023/02/07 18:20:10 by zweng            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,12 @@ int is_big_endian(char *file)
     if (!init)
     {
         endian = file[EI_DATA];
+        /*if (endian == ELFDATA2LSB)
+            ft_printf("small endian\n");
+        else if (endian == ELFDATA2MSB)
+            ft_printf("big endian\n");
+        else
+            ft_printf("endian error\n");*/
         init = 1;
     }
     if (endian == ELFDATA2LSB)
