@@ -6,7 +6,7 @@
 /*   By: zweng <zweng@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/23 17:25:25 by zweng             #+#    #+#             */
-/*   Updated: 2023/01/09 16:26:34 by zweng            ###   ########.fr       */
+/*   Updated: 2023/02/07 17:04:25 by vagrant          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,8 +30,8 @@ static int  output_entry(t_symbol sym)
 {
     unsigned int	shndx, value; 
 
-    shndx = ((Elf64_Sym *)sym.symptr)->st_shndx;
-    value = ((Elf64_Sym *)sym.symptr)->st_value;
+    shndx = read_uint16(((Elf64_Sym *)sym.symptr)->st_shndx);
+    value = read_uint64(((Elf64_Sym *)sym.symptr)->st_value);
     if (shndx != SHN_UNDEF)
         ft_printf("%016x %1c %s\n", value, sym.type, sym.name);
     else
@@ -96,36 +96,48 @@ static void add_to_array(t_array **arr, unsigned char type,
 static int  handle_symtab(const void *file, size_t filesize, Elf64_Ehdr *ehdr,
         Elf64_Shdr *shdrt, unsigned int symtab_idx, t_param params)
 {
-    unsigned int    symtab_len, strtab_idx, i, name_idx, shstrtabidx;
+    unsigned int    symtab_len, i, name_idx, shstrtabidx;
     Elf64_Sym       *symtab;
     char            *strtab, *shstrtab, *name;
     unsigned char   type;
     t_array         *sym_arr;
+    uint16_t        e_shstrndx, e_shnum, st_shndx;
+    uint32_t        sh_type, sh_name, strtab_idx, symtab_st_name;
+    uint64_t        strtab_sh_offset, strtab_sh_size, symtab_sh_offset,
+                    symtab_sh_size, symtab_sh_entsize, shstr_sh_offset,
+                    shstr_sh_size;
 
     sym_arr = NULL;
-    strtab_idx = shdrt[symtab_idx].sh_link;
-    if (sizeof(*symtab) != shdrt[symtab_idx].sh_entsize ||
-        shdrt[symtab_idx].sh_link >= ehdr->e_shnum ||
-        ehdr->e_shstrndx >= ehdr->e_shnum || 
-        filesize < shdrt[strtab_idx].sh_offset + shdrt[strtab_idx].sh_size ||
-        filesize < shdrt[symtab_idx].sh_offset + shdrt[symtab_idx].sh_size ||
-        filesize < shdrt[ehdr->e_shstrndx].sh_offset +
-        shdrt[ehdr->e_shstrndx].sh_size)
+    strtab_idx = read_uint32(shdrt[symtab_idx].sh_link);
+    e_shstrndx = read_uint16(ehdr->e_shstrndx);
+    e_shnum = read_uint16(ehdr->e_shnum);
+    strtab_sh_offset = read_uint64(shdrt[strtab_idx].sh_offset);
+    strtab_sh_size = read_uint64(shdrt[strtab_idx].sh_size);
+    symtab_sh_offset = read_uint64(shdrt[symtab_idx].sh_offset);
+    symtab_sh_size = read_uint64(shdrt[symtab_idx].sh_size);
+    symtab_sh_entsize = read_uint64(shdrt[symtab_idx].sh_entsize);
+    shstr_sh_offset = read_uint64(shdrt[e_shstrndx].sh_offset);
+    shstr_sh_size = read_uint64(shdrt[e_shstrndx].sh_size);
+    if (sizeof(*symtab) !=  symtab_sh_entsize ||
+        strtab_idx >= e_shnum || e_shstrndx >= e_shnum || 
+        filesize < strtab_sh_offset + strtab_sh_size ||
+        filesize < symtab_sh_offset + symtab_sh_size ||
+        filesize < shstr_sh_offset + shstr_sh_size)
         return error_msg("Bad symtab\n");
-    strtab = (char *)(file + shdrt[strtab_idx].sh_offset);
-    shstrtab = (char *)(file + shdrt[ehdr->e_shstrndx].sh_offset);
-    symtab = (Elf64_Sym *)(file + shdrt[symtab_idx].sh_offset);
-    symtab_len = ft_symtab_counter(shdrt[symtab_idx].sh_size,
-            sizeof(*symtab));
+    strtab = (char *)(file + strtab_sh_offset);
+    shstrtab = (char *)(file + shstr_sh_offset);
+    symtab = (Elf64_Sym *)(file + symtab_sh_offset);
+    symtab_len = ft_symtab_counter(symtab_sh_size, sizeof(*symtab));
     i = 1;
     while (i < symtab_len)
     {
-        name_idx = symtab[i].st_name;
-		name = strtab + name_idx;
+        symtab_st_name = read_uint32(symtab[i].st_name);
+		name = strtab + symtab_st_name;
 		type = get_sym_type64(ehdr, shdrt, symtab[i]);
-        if (symtab[i].st_shndx < ehdr->e_shnum)
+        st_shndx = read_uint16(symtab[i].st_shndx);
+        if (st_shndx < e_shnum)
         {
-            shstrtabidx = shdrt[symtab[i].st_shndx].sh_name;
+            shstrtabidx = read_uint32(shdrt[st_shndx].sh_name);
 			if (ELF64_ST_TYPE(symtab[i].st_info) == STT_SECTION)
 				name = shstrtab + shstrtabidx;
         }
@@ -143,24 +155,35 @@ int         ft_nm64(const void *file, size_t size, t_param params)
     Elf64_Ehdr      *ehdr;
     Elf64_Shdr      *shdrt;
     unsigned int    i;
+    uint16_t        e_shstrndx, e_shnum;
+    uint32_t        sh_type, sh_name;
+    uint64_t        sh_size, e_shoff, sh_offset;
 
     if (size < sizeof(*ehdr))
        return error_msg("File size too small\n");
     ehdr = (Elf64_Ehdr *)file;
-    shdrt = (Elf64_Shdr *)(file + ehdr->e_shoff);
-    if (shdrt[0].sh_size != 0 && shdrt[0].sh_offset != 0)
+    e_shoff = read_uint64(ehdr->e_shoff);
+    shdrt = (Elf64_Shdr *)(file + e_shoff);
+    sh_size = read_uint64(shdrt[0].sh_size);
+    sh_offset = read_uint64(shdrt[0].sh_offset);
+    e_shstrndx = read_uint16(ehdr->e_shstrndx);
+    e_shnum = read_uint16(ehdr->e_shnum);
+    sh_type = read_uint32(shdrt[e_shstrndx].sh_type);
+    if (sh_size != 0 && sh_offset != 0)
         return error_msg("bad section table\n");
-    if (ehdr->e_shstrndx >= ehdr->e_shnum ||
-            shdrt[ehdr->e_shstrndx].sh_type != SHT_STRTAB)
+    if (e_shstrndx >= e_shnum || sh_type != SHT_STRTAB)
         return error_msg("bad section table header\n");
     i = 0;
-    while (i < ehdr->e_shnum)
+    while (i < e_shnum)
     {
-       if (shdrt[i].sh_name > shdrt[ehdr->e_shstrndx].sh_size)
-           return error_msg("bad section table header\n");
-       if (shdrt[i].sh_type == SHT_SYMTAB)
-           return handle_symtab(file, size, ehdr, shdrt, i, params);
-       i++;
+        sh_name = read_uint32(shdrt[i].sh_name);
+        sh_size = read_uint64(shdrt[e_shstrndx].sh_size);
+        sh_type = read_uint32(shdrt[i].sh_type);
+        if (sh_name > sh_size)
+            return error_msg("bad section table header\n");
+        if (sh_type == SHT_SYMTAB)
+            return handle_symtab(file, size, ehdr, shdrt, i, params);
+        i++;
     }
     return error_msg("No Symtab found\n");
 }

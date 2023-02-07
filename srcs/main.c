@@ -6,7 +6,7 @@
 /*   By: zweng <zweng@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 12:23:00 by zweng             #+#    #+#             */
-/*   Updated: 2023/01/09 17:25:20 by zweng            ###   ########.fr       */
+/*   Updated: 2023/02/07 15:40:46 by vagrant          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,6 @@ static int  init_params(t_param *params, int ac, char **av)
             file_count++;
         i++;
     }
-    //print_params(*params);
     return (file_count);
 }
 
@@ -63,7 +62,7 @@ static int  ft_nm(const char *filename, t_param params)
 {
     int             fd;
     int             ret;
-    unsigned char   arch, data;
+    unsigned char   arch, endian;
     struct stat     statbuf;
     void            *file;
 
@@ -78,13 +77,9 @@ static int  ft_nm(const char *filename, t_param params)
     {
         return error_msg_cleanup("mmap failed\n", fd, NULL, 0);
     }
-    if (!check_elf_ident(file, &arch, statbuf.st_size, &data))
+    if (!check_elf_ident(file, &arch, statbuf.st_size))
         return error_msg_cleanup("checked elf ident failed\n",
-                fd, file, statbuf.st_size);
-    if (data == ELFDATA2LSB)
-       ft_printf("little-endian\n");
-    else if (data == ELFDATA2MSB)
-       ft_printf("big-endian\n");
+            fd, file, statbuf.st_size);
     if (arch == ELFCLASS32)
         ret = ft_nm32(file, statbuf.st_size, params);
     else if (arch == ELFCLASS64)

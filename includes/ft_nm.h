@@ -6,7 +6,7 @@
 /*   By: zweng <zweng@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/13 17:08:48 by zweng             #+#    #+#             */
-/*   Updated: 2023/01/09 17:24:05 by zweng            ###   ########.fr       */
+/*   Updated: 2023/02/07 16:40:14 by zweng            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,10 +21,10 @@
 # include <fcntl.h>
 # include <ar.h>
 # include <elf.h>
-
 # include <stdio.h>
 
 # define HAS_ARG(x, y) ((x & y) > 0)
+# define OPT_BIG_ENDIAN (1)
 
 typedef enum    e_param {
     ARG_A = 1 << 0,
@@ -48,8 +48,7 @@ int             ft_nm64(const void *file, size_t size, t_param params);
  *
  * helper functions
  */
-int             check_elf_ident(char *file, unsigned char *arch, size_t size,
-                unsigned char *data);
+int             check_elf_ident(char *file, unsigned char *arch, size_t size);
 int             is_special_section_indice(uint16_t s_idx);
 int             error_msg(const char *str);
 int             error_msg_cleanup(const char *str, int fd,
@@ -64,5 +63,19 @@ unsigned int	get_sym_type64(Elf64_Ehdr *ehdr, Elf64_Shdr *shdrt,
 unsigned int	get_sym_type32(Elf32_Ehdr *ehdr, Elf32_Shdr *shdrt,
                 Elf32_Sym cur_sym);
 unsigned char   type_adjust(const char *sname, char type, unsigned int bind);
+/*
+ *
+ * endian functions
+ *
+ */ 
+int             is_big_endian(char *file);
+void            reverse_endian(void *ptr, size_t length);
+uint16_t	    read_uint16(uint16_t nb);
+uint32_t        read_uint32(uint32_t nb);
+uint64_t        read_uint64(uint64_t nb);
+unsigned int	read_unsigned_int(unsigned int nb);
+long unsigned int   read_long_unsigned_int(long unsigned int nb);
+int			    read_int(int nb);
+
 #endif
 

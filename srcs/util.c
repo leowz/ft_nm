@@ -6,19 +6,18 @@
 /*   By: zweng <zweng@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/23 16:57:09 by zweng             #+#    #+#             */
-/*   Updated: 2023/01/09 17:23:30 by zweng            ###   ########.fr       */
+/*   Updated: 2023/02/07 16:42:15 by zweng            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_nm.h"
 
-int check_elf_ident(char *file, unsigned char *arch, size_t size,
-        unsigned char *data)
+int check_elf_ident(char *file, unsigned char *arch, size_t size)
 {
     if (size < 16)
         return (FUN_FAIL);
     *arch = file[EI_CLASS];
-    *data = file[EI_DATA];
+    is_big_endian(file);
     if (ft_memcmp(file, ELFMAG, SELFMAG) != 0 || 
             file[EI_CLASS] <= 0 || file[EI_CLASS] > 2 ||
             file[EI_DATA] <= 0 || file[EI_DATA] > 2 ||
@@ -26,6 +25,30 @@ int check_elf_ident(char *file, unsigned char *arch, size_t size,
         return (0);
     else
         return (1);
+}
+
+/*
+ * big endian return 1, small endian return 0
+ * else return -1
+ *
+*/
+
+int is_big_endian(char *file)
+{
+    static unsigned char endian;
+    static int  init = 0;
+
+    if (!init)
+    {
+        endian = file[EI_DATA];
+        init = 1;
+    }
+    if (endian == ELFDATA2LSB)
+        return (0);
+    else if (endian == ELFDATA2MSB)
+        return (1);
+    else
+        return (-1);
 }
 
 int is_special_section_indice(uint16_t s_idx)
