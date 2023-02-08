@@ -6,7 +6,7 @@
 #    By: zweng <zweng@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/08/19 12:41:50 by zweng             #+#    #+#              #
-#    Updated: 2023/01/09 15:25:55 by vagrant          ###   ########.fr        #
+#    Updated: 2023/02/08 17:26:56 by vagrant          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -85,23 +85,19 @@ fclean: clean
 	@printf $(GREEN)"$(NAME) fclean\n"$(EOC)
 	@/bin/rm -f $(LIB)
 	@printf $(GREEN)"$(LIB) fclean\n"$(EOC)
+	@/bin/rm -f t1.*
 
 -include $(DFILES)
 
 diffy: $(NAME)
-	./$(NAME) $(NAME) > t1.my
-	nm $(NAME) > t1.nm
+	./$(NAME) ${arg1} $(arg2) > t1.my
+	nm ${arg1} $(arg2) > t1.nm
 	diff -y t1.my t1.nm
 
 diff: $(NAME)
-	./$(NAME) $(NAME) > t1.my
-	nm $(NAME) > t1.nm
+	./$(NAME) ${arg1} $(arg2) > t1.my
+	nm ${arg1} $(arg2) > t1.nm
 	diff t1.my t1.nm
-
-apdiffy: $(NAME)
-	./$(NAME) -a $(NAME) > t1.my
-	nm -a $(NAME) > t1.nm
-	diff -y t1.my t1.nm
 
 adiffy: $(NAME)
 	./$(NAME) ${arg1} $(arg2) > t1.my

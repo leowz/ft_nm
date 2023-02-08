@@ -6,7 +6,7 @@
 /*   By: zweng <zweng@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/23 16:57:09 by zweng             #+#    #+#             */
-/*   Updated: 2023/02/07 18:20:10 by zweng            ###   ########.fr       */
+/*   Updated: 2023/02/08 17:00:45 by vagrant          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,12 +41,6 @@ int is_big_endian(char *file)
     if (!init)
     {
         endian = file[EI_DATA];
-        /*if (endian == ELFDATA2LSB)
-            ft_printf("small endian\n");
-        else if (endian == ELFDATA2MSB)
-            ft_printf("big endian\n");
-        else
-            ft_printf("endian error\n");*/
         init = 1;
     }
     if (endian == ELFDATA2LSB)
@@ -91,6 +85,8 @@ unsigned char   type_adjust(const char *sname, char type, unsigned int bind)
     if (!ft_strncmp(sname, ".gnu.hash", ft_strlen(".gnu.hash")) ||
             !ft_strncmp(sname, ".rodata", ft_strlen(".rodata")) ||
             !ft_strncmp(sname, ".rela.plt", ft_strlen(".rela.plt")) ||
+            !ft_strncmp(sname, ".rela.bss", ft_strlen(".rela.bss")) ||
+            !ft_strncmp(sname, ".rela.got", ft_strlen(".rela.got")) ||
             !ft_strncmp(sname, ".gnu.version_r", ft_strlen(".gnu.version_r")))
     {
         c = 'R';

@@ -6,7 +6,7 @@
 /*   By: zweng <zweng@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/23 17:25:25 by zweng             #+#    #+#             */
-/*   Updated: 2023/02/07 17:04:25 by vagrant          ###   ########.fr       */
+/*   Updated: 2023/02/08 17:07:02 by vagrant          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ static void print_symbols(t_array *arr, t_param params)
     t_symbol    *sym;
     t_arritem   *item;
     Elf64_Sym   *symptr;
+    uint16_t    st_shndx;
 
     i = 0;
     if (!HAS_ARG(params, ARG_P))
@@ -56,21 +57,22 @@ static void print_symbols(t_array *arr, t_param params)
         item = ft_arritem_at(arr, i);
         sym = item->content;
         symptr = sym->symptr;
+        st_shndx = read_uint16(symptr->st_shndx);
         if (HAS_ARG(params, ARG_U))
         {
-            if (symptr->st_shndx == SHN_UNDEF) 
+            if (st_shndx == SHN_UNDEF) 
                 output_entry(*sym);
         }
         else if (HAS_ARG(params, ARG_G))
         {
-            if ( ELF64_ST_BIND(symptr->st_info) == STB_GLOBAL ||
+            if (ELF64_ST_BIND(symptr->st_info) == STB_GLOBAL ||
                     ELF64_ST_BIND(symptr->st_info) == STB_WEAK)
                 output_entry(*sym);
         }
         else if (HAS_ARG(params, ARG_A))
             output_entry(*sym);
         else
-            if ((!is_special_section_indice(symptr->st_shndx) &&
+            if ((!is_special_section_indice(st_shndx) &&
                         ELF64_ST_TYPE(symptr->st_info) != STT_SECTION))
                 output_entry(*sym);
         i++;
@@ -163,6 +165,8 @@ int         ft_nm64(const void *file, size_t size, t_param params)
        return error_msg("File size too small\n");
     ehdr = (Elf64_Ehdr *)file;
     e_shoff = read_uint64(ehdr->e_shoff);
+    if (e_shoff > size)
+        return error_msg("File e_shoff bigger than file size\n");
     shdrt = (Elf64_Shdr *)(file + e_shoff);
     sh_size = read_uint64(shdrt[0].sh_size);
     sh_offset = read_uint64(shdrt[0].sh_offset);
