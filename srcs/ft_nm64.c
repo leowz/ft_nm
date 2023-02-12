@@ -6,7 +6,7 @@
 /*   By: zweng <zweng@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/23 17:25:25 by zweng             #+#    #+#             */
-/*   Updated: 2023/02/08 17:07:02 by vagrant          ###   ########.fr       */
+/*   Updated: 2023/02/10 17:44:31 by vagrant          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,8 +79,8 @@ static void print_symbols(t_array *arr, t_param params)
     }
 }
 
-static void add_to_array(t_array **arr, unsigned char type,
-        char *name, Elf64_Sym *symptr)
+static void add_to_array(t_array **arr, unsigned char type, char *st_name,
+        uint64_t st_value, Elf64_Sym *symptr)
 {
     t_symbol    *sym;
 
@@ -90,7 +90,8 @@ static void add_to_array(t_array **arr, unsigned char type,
     {
         sym->symptr = symptr;
         sym->type = type;
-        sym->name = name;
+        sym->name = st_name;
+        sym->value = st_value;
         ft_arrappend_raw(*arr, sym, sizeof(*sym));
     }
 }
@@ -144,7 +145,10 @@ static int  handle_symtab(const void *file, size_t filesize, Elf64_Ehdr *ehdr,
 				name = shstrtab + shstrtabidx;
         }
 		type = type_adjust(name, type, ELF64_ST_BIND(symtab[i].st_info));
-        add_to_array(&sym_arr, type, name, symtab + i);
+        if (i == 144 || i == 179) {
+        add_to_array(&sym_arr, type, name,
+                read_uint64(symtab[i].st_value), symtab + i);
+        }
         i++;
     }
     print_symbols(sym_arr, params);

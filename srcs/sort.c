@@ -6,13 +6,13 @@
 /*   By: zweng <zweng@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/15 11:55:12 by zweng             #+#    #+#             */
-/*   Updated: 2023/01/09 14:53:34 by zweng            ###   ########.fr       */
+/*   Updated: 2023/02/10 17:38:12 by vagrant          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_nm.h"
 
-static int strcmp_nocase(const char *s1, const char *s2)
+static int strcmp_case(const char *s1, const char *s2, int case_sensitive)
 {
     char c1, c2;
 
@@ -22,17 +22,20 @@ static int strcmp_nocase(const char *s1, const char *s2)
     {
        while (!ft_isalnum(*s1)) s1++;
        while (!ft_isalnum(*s2)) s2++;
-       c1 = ft_tolower(*s1);
-       c2 = ft_tolower(*s2);
+       if (case_sensitive == FALSE)
+       {
+           c1 = ft_tolower(*s1);
+           c2 = ft_tolower(*s2);
+       }
        if (c1 == c2)
        {
            s1++;
            s2++;
        }
        else
-           return (c1 - c2);
+           return (c2 - c1);
     }
-    return (*s1 - *s2);
+    return (*s2 - *s1);
 }
 
 static int item_cmp(t_arritem *lhs, t_arritem *rhs)
@@ -40,13 +43,18 @@ static int item_cmp(t_arritem *lhs, t_arritem *rhs)
     t_symbol    *sym1, *sym2;
     char        *name1, *name2;
     int         cmp;
+    uint64_t    value1, value2;
 
     sym1 = lhs->content;
     sym2 = rhs->content;
     name1 = sym1->name;
     name2 = sym2->name;
-    cmp = strcmp_nocase(name1, name2);
+    value1 = sym1->value;
+    value2 = sym2->value;
+    cmp = strcmp_case(name2, name1, FALSE);
     if (!cmp)
+        cmp = value1 - value2;
+    /*if (!cmp)
     {
         if (sym2->type == 'W' && sym1->type == 'D')
             cmp = -1;
@@ -60,13 +68,11 @@ static int item_cmp(t_arritem *lhs, t_arritem *rhs)
             cmp = -1;
         else if (sym2->type == 'W' && sym1->type == 'T')
             cmp = 1;
-        else
-            cmp = ((sym2->type - sym1->type));
-    }
+    }*/
+    /*if (!cmp)
+        cmp = strcmp_case(name2, name1, TRUE);*/
     if (!cmp)
-        cmp = ft_strlen(name1) - ft_strlen(name2);
-    if (!cmp)
-        cmp = *name1 - *name2;
+        cmp = ft_strcmp(name2, name1);
     return (cmp);
 }
 

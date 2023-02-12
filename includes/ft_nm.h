@@ -6,7 +6,7 @@
 /*   By: zweng <zweng@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/13 17:08:48 by zweng             #+#    #+#             */
-/*   Updated: 2023/02/07 16:40:14 by zweng            ###   ########.fr       */
+/*   Updated: 2023/02/10 17:03:58 by vagrant          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,8 @@ typedef enum    e_param {
 typedef struct  s_symbol{
     unsigned char   type;
     char            *name;
+    uint64_t        size;
+    uint64_t        value;
     void            *symptr;
 }               t_symbol;
 /*
