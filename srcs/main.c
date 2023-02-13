@@ -6,7 +6,7 @@
 /*   By: zweng <zweng@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 12:23:00 by zweng             #+#    #+#             */
-/*   Updated: 2023/02/07 15:40:46 by vagrant          ###   ########.fr       */
+/*   Updated: 2023/02/13 14:14:31 by vagrant          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,17 +19,6 @@ static int  is_arg(const char *str)
     return (!ft_strncmp(str, "-a\0", 3) || !ft_strncmp(str, "-g\0", 3) || 
         !ft_strncmp(str, "-u\0", 3) || !ft_strncmp(str, "-r\0", 3) || 
         !ft_strncmp(str, "-p\0", 3));
-}
-
-static void print_params(t_param params)
-{
-    ft_printf("params: \n");
-    ft_printf("-a: %d\n", (params & ARG_A) > 0);
-    ft_printf("-g: %d\n", (params & ARG_G) > 0);
-    ft_printf("-u: %d\n", (params & ARG_U) > 0);
-    ft_printf("-r: %d\n", (params & ARG_R) > 0);
-    ft_printf("-p: %d\n", (params & ARG_P) > 0);
-    ft_printf("%d\n", params);
 }
 
 static int  init_params(t_param *params, int ac, char **av)
@@ -62,7 +51,7 @@ static int  ft_nm(const char *filename, t_param params)
 {
     int             fd;
     int             ret;
-    unsigned char   arch, endian;
+    unsigned char   arch;
     struct stat     statbuf;
     void            *file;
 

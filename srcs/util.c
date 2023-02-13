@@ -6,7 +6,7 @@
 /*   By: zweng <zweng@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/23 16:57:09 by zweng             #+#    #+#             */
-/*   Updated: 2023/02/08 17:00:45 by vagrant          ###   ########.fr       */
+/*   Updated: 2023/02/13 14:52:07 by zweng            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,10 @@ unsigned char   type_adjust(const char *sname, char type, unsigned int bind)
     char    c;
 
     c = 0;
+    if (!ft_strncmp(sname, ".symtab", ft_strlen(".symtab")) || 
+            !ft_strncmp(sname, ".strtab", ft_strlen(".strtab")) ||
+            !ft_strncmp(sname, ".shstrtab", ft_strlen(".shstrtab")))
+        c = 'a';
     if (!ft_strncmp(sname, ".comment", ft_strlen(".comment")) || 
             !ft_strncmp(sname, ".copyright", ft_strlen(".copyright")) ||
             !ft_strncmp(sname, ".gnu_debug", ft_strlen(".gnu_debug")) ||
@@ -84,7 +88,10 @@ unsigned char   type_adjust(const char *sname, char type, unsigned int bind)
         c = 'N';
     if (!ft_strncmp(sname, ".gnu.hash", ft_strlen(".gnu.hash")) ||
             !ft_strncmp(sname, ".rodata", ft_strlen(".rodata")) ||
+            !ft_strncmp(sname, ".dynstr", ft_strlen(".dynstr")) ||
             !ft_strncmp(sname, ".rela.plt", ft_strlen(".rela.plt")) ||
+            !ft_strncmp(sname, ".rel.plt", ft_strlen(".rel.plt")) ||
+            !ft_strncmp(sname, ".SUNW_version", ft_strlen(".SUNW_version")) ||
             !ft_strncmp(sname, ".rela.bss", ft_strlen(".rela.bss")) ||
             !ft_strncmp(sname, ".rela.got", ft_strlen(".rela.got")) ||
             !ft_strncmp(sname, ".gnu.version_r", ft_strlen(".gnu.version_r")))

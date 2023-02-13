@@ -6,14 +6,13 @@
 /*   By: zweng <zweng@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/08 16:02:47 by zweng             #+#    #+#             */
-/*   Updated: 2023/02/08 17:19:02 by vagrant          ###   ########.fr       */
+/*   Updated: 2023/02/13 14:13:49 by vagrant          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_nm.h"
 
-static unsigned int	get_sym_type_suite_2(Elf32_Ehdr *ehdr, Elf32_Shdr *shdrt,
-		Elf32_Sym cur_sym)
+static unsigned int	get_sym_type_suite_2(Elf32_Shdr *shdrt, Elf32_Sym cur_sym)
 {
 	unsigned int	c, bind;
     uint16_t        st_shndx;
@@ -64,7 +63,7 @@ static unsigned int	get_sym_type_suite(Elf32_Ehdr *ehdr, Elf32_Shdr *shdrt,
                 sh_type == SHT_NOTE) && sh_flags == SHF_ALLOC)
             c = 'R';
         else
-            return (get_sym_type_suite_2(ehdr, shdrt, cur_sym));
+            return (get_sym_type_suite_2(shdrt, cur_sym));
     }
 	if (bind == STB_LOCAL && c != '?')
 		c += 32;
@@ -82,17 +81,17 @@ unsigned int	get_sym_type32(Elf32_Ehdr *ehdr, Elf32_Shdr *shdrt,
     st_shndx = read_uint16(cur_sym.st_shndx);
 	if (bind == STB_GNU_UNIQUE)
 		c = 'u';
-	else if (bind == STB_WEAK)
-	{
-		c = 'W';
-		if (st_shndx == SHN_UNDEF)
-			c = 'w';
-	}
 	else if (bind == STB_WEAK && type == STT_OBJECT)
 	{
 		c = 'V';
 		if (st_shndx == SHN_UNDEF)
 			c = 'v';
+	}
+	else if (bind == STB_WEAK)
+	{
+		c = 'W';
+		if (st_shndx == SHN_UNDEF)
+			c = 'w';
 	}
 	else if (st_shndx == SHN_UNDEF)
 		c = 'U';

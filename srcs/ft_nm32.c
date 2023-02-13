@@ -6,7 +6,7 @@
 /*   By: zweng <zweng@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/23 17:25:25 by zweng             #+#    #+#             */
-/*   Updated: 2023/02/10 17:09:05 by vagrant          ###   ########.fr       */
+/*   Updated: 2023/02/13 15:00:55 by vagrant          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ static unsigned int ft_symtab_counter(unsigned int total, unsigned int size)
    return counter; 
 }
 
-static int  output_entry(t_symbol sym)
+static void output_entry(t_symbol sym)
 {
     unsigned int	shndx, value; 
 
@@ -40,7 +40,7 @@ static int  output_entry(t_symbol sym)
 
 static void print_symbols(t_array *arr, t_param params)
 {
-    int         i;
+    uint32_t    i;
     t_symbol    *sym;
     t_arritem   *item;
     Elf32_Sym   *symptr;
@@ -48,10 +48,13 @@ static void print_symbols(t_array *arr, t_param params)
 
     i = 0;
     if (!HAS_ARG(params, ARG_P))
+    {
+        ft_arrbubblesort(arr, itemcmp_value_asc);
         if (!HAS_ARG(params, ARG_R))
             ft_arrbubblesort(arr, itemcmp_asc);
         else 
             ft_arrbubblesort(arr, itemcmp_desc);
+    }
     while (arr && i < arr->current_size)
     {
         item = ft_arritem_at(arr, i);
@@ -80,18 +83,19 @@ static void print_symbols(t_array *arr, t_param params)
 }
 
 static void add_to_array(t_array **arr, unsigned char type, char *st_name,
-        uint64_t st_value, Elf32_Sym *symptr)
+        uint64_t st_value, uint16_t st_shndx, Elf32_Sym *symptr)
 {
     t_symbol    *sym;
 
     if (!(*arr))
        *arr = ft_arrnew(); 
-    if (sym = malloc(sizeof(*sym)))
+    if ((sym = malloc(sizeof(*sym))))
     {
         sym->symptr = symptr;
         sym->type = type;
         sym->name = st_name;
         sym->value = st_value;
+        sym->index = st_shndx;
         ft_arrappend_raw(*arr, sym, sizeof(*sym));
     }
 }
@@ -99,13 +103,13 @@ static void add_to_array(t_array **arr, unsigned char type, char *st_name,
 static int  handle_symtab(const void *file, size_t filesize, Elf32_Ehdr *ehdr,
         Elf32_Shdr *shdrt, unsigned int symtab_idx, t_param params)
 {
-    unsigned int    symtab_len, i, name_idx, shstrtabidx;
+    unsigned int    symtab_len, i, shstrtabidx;
     Elf32_Sym       *symtab;
     char            *strtab, *shstrtab, *name;
     unsigned char   type;
     t_array         *sym_arr;
     uint16_t        e_shstrndx, e_shnum, st_shndx;
-    uint32_t        sh_type, sh_name, strtab_idx, symtab_st_name;
+    uint32_t        strtab_idx, symtab_st_name;
     uint32_t        strtab_sh_offset, strtab_sh_size, symtab_sh_offset,
                     symtab_sh_size, symtab_sh_entsize, shstr_sh_offset,
                     shstr_sh_size;
@@ -146,7 +150,7 @@ static int  handle_symtab(const void *file, size_t filesize, Elf32_Ehdr *ehdr,
         }
 		type = type_adjust(name, type, ELF32_ST_BIND(symtab[i].st_info));
         add_to_array(&sym_arr, type, name, read_uint32(symtab[i].st_value),
-                symtab + i);
+                st_shndx, symtab + i);
         i++;
     }
     print_symbols(sym_arr, params);

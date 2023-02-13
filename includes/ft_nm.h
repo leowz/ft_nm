@@ -6,7 +6,7 @@
 /*   By: zweng <zweng@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/13 17:08:48 by zweng             #+#    #+#             */
-/*   Updated: 2023/02/10 17:03:58 by vagrant          ###   ########.fr       */
+/*   Updated: 2023/02/13 15:34:37 by zweng            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ typedef struct  s_symbol{
     char            *name;
     uint64_t        size;
     uint64_t        value;
+    uint16_t        index;
     void            *symptr;
 }               t_symbol;
 /*
@@ -59,6 +60,7 @@ void            set_sym_arr(t_symbol *arr, unsigned int index,
                 unsigned int value, unsigned char type, char *name);
 int             itemcmp_desc(t_arritem *lhs, t_arritem *rhs);
 int             itemcmp_asc(t_arritem *lhs, t_arritem *rhs);
+int             itemcmp_value_asc(t_arritem *lhs, t_arritem *rhs);
 void            delete_array(t_array **arr);
 unsigned int	get_sym_type64(Elf64_Ehdr *ehdr, Elf64_Shdr *shdrt,
                 Elf64_Sym cur_sym);
