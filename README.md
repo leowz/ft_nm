@@ -241,7 +241,7 @@ Big-endian: Stores the Most Significant Byte (MSB) of the data word in the small
 
 Little-endian: Stores the Least Significant Byte (LSB) of the data word in the smallest address in memory.
 
-If file endian is not the same endian with the machine, a endian reverse must be applied to the data read from the file to make sure the data is correct. The key point is the all data with a size over 8bits must perform this reverse(because endian only affect data over 8bits). Macros imported from machine is the same endian with the machine so when doing macro comparation, the endian need to take into consideration. 
+If file endian is not the same endian with the machine, a endian reverse must be applied to the data read from the file to make sure the data is correct. The key point is the all data with a size over 8bits must perform this reverse(because endian only affect data over 8bits). Macros imported from machine is the same endian with the machine so when doing macro comparision, the endian need to take into consideration. 
 
 ## PS
 The type of my ft_nm does not correspond exactly like GNU NM. And the sorting also. Because I failed to find the exact reference to the type and sorting of NM. I guess it depends on the implementation.
