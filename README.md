@@ -2,6 +2,11 @@
 My implementation of 42 NM. Works on x86, x64, object files and dynamic lib .so files.
 Similar to the GNU system nm command with differences.
 
+## Useful links
+[ELF reference](https://man7.org/linux/man-pages/man5/elf.5.html)
+
+[NM reference](https://man7.org/linux/man-pages/man1/nm.1.html)
+
 ## Background knowledage
 
 below are all informations I found useful in developing this project.
