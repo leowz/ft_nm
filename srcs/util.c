@@ -6,7 +6,7 @@
 /*   By: zweng <zweng@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/23 16:57:09 by zweng             #+#    #+#             */
-/*   Updated: 2023/02/13 14:52:07 by zweng            ###   ########.fr       */
+/*   Updated: 2023/02/14 12:20:41 by vagrant          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ int check_elf_ident(char *file, unsigned char *arch, size_t size)
     if (size < 16)
         return (FUN_FAIL);
     *arch = file[EI_CLASS];
-    is_big_endian(file);
+    need_change_endian(file);
     if (ft_memcmp(file, ELFMAG, SELFMAG) != 0 || 
             file[EI_CLASS] <= 0 || file[EI_CLASS] > 2 ||
             file[EI_DATA] <= 0 || file[EI_DATA] > 2 ||
@@ -27,28 +27,39 @@ int check_elf_ident(char *file, unsigned char *arch, size_t size)
         return (1);
 }
 
+static int get_machine_endian()
+{
+    int i;
+    
+    i = 1;
+    if (*((char *)&i) == 1)
+        return (ELFDATA2LSB);
+    else
+        return (ELFDATA2MSB);
+}
+
 /*
  * big endian return 1, small endian return 0
  * else return -1
  *
 */
 
-int is_big_endian(char *file)
+int need_change_endian(char *file)
 {
-    static unsigned char endian;
+    static unsigned char file_endian;
+    static unsigned char mach_endian;
     static int  init = 0;
 
     if (!init)
     {
-        endian = file[EI_DATA];
+        file_endian = file[EI_DATA];
+        mach_endian = get_machine_endian();
         init = 1;
     }
-    if (endian == ELFDATA2LSB)
+    if (file_endian == mach_endian)
         return (0);
-    else if (endian == ELFDATA2MSB)
-        return (1);
     else
-        return (-1);
+        return (1);
 }
 
 int is_special_section_indice(uint16_t s_idx)

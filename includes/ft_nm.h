@@ -6,7 +6,7 @@
 /*   By: zweng <zweng@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/13 17:08:48 by zweng             #+#    #+#             */
-/*   Updated: 2023/02/13 15:34:37 by zweng            ###   ########.fr       */
+/*   Updated: 2023/02/14 13:43:01 by zweng            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,10 +21,8 @@
 # include <fcntl.h>
 # include <ar.h>
 # include <elf.h>
-# include <stdio.h>
 
 # define HAS_ARG(x, y) ((x & y) > 0)
-# define OPT_BIG_ENDIAN (1)
 
 typedef enum    e_param {
     ARG_A = 1 << 0,
@@ -72,7 +70,7 @@ unsigned char   type_adjust(const char *sname, char type, unsigned int bind);
  * endian functions
  *
  */ 
-int             is_big_endian(char *file);
+int             need_change_endian(char *file);
 void            reverse_endian(void *ptr, size_t length);
 uint16_t	    read_uint16(uint16_t nb);
 uint32_t        read_uint32(uint32_t nb);

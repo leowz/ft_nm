@@ -6,7 +6,7 @@
 /*   By: zweng <zweng@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/09 17:40:02 by zweng             #+#    #+#             */
-/*   Updated: 2023/02/07 16:41:59 by zweng            ###   ########.fr       */
+/*   Updated: 2023/02/14 13:32:40 by zweng            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,9 +38,9 @@ uint16_t	read_uint16(uint16_t nb)
 	uint16_t	res;
     int         endian;
 
-    endian = is_big_endian(NULL);
+    endian = need_change_endian(NULL);
 	res = nb;
-	if (endian & OPT_BIG_ENDIAN)
+	if (endian)
 		reverse_endian(&res, sizeof(uint16_t));
 	return (res);
 }
@@ -50,9 +50,9 @@ uint32_t	read_uint32(uint32_t nb)
 	uint32_t	res;
     int         endian;
 
-    endian = is_big_endian(NULL);
+    endian = need_change_endian(NULL);
 	res = nb;
-	if (endian & OPT_BIG_ENDIAN)
+	if (endian)
 		reverse_endian(&res, sizeof(uint32_t));
 	return (res);
 }
@@ -62,9 +62,9 @@ uint64_t	read_uint64(uint64_t nb)
 	uint64_t	res;
     int         endian;
 
-    endian = is_big_endian(NULL);
+    endian = need_change_endian(NULL);
 	res = nb;
-	if (endian & OPT_BIG_ENDIAN)
+	if (endian)
 		reverse_endian(&res, sizeof(uint64_t));
 	return (res);
 }
@@ -74,9 +74,9 @@ unsigned int	read_unsigned_int(unsigned int nb)
 	unsigned int	res;
     int         endian;
 
-    endian = is_big_endian(NULL);
+    endian = need_change_endian(NULL);
 	res = nb;
-	if (endian & OPT_BIG_ENDIAN)
+	if (endian)
 		reverse_endian(&res, sizeof(unsigned int));
 	return (res);
 }
@@ -86,9 +86,9 @@ long unsigned int	read_long_unsigned_int(long unsigned int nb)
 	long unsigned int	res;
     int         endian;
 
-    endian = is_big_endian(NULL);
+    endian = need_change_endian(NULL);
 	res = nb;
-	if (endian & OPT_BIG_ENDIAN)
+	if (endian)
 		reverse_endian(&res, sizeof(long unsigned int));
 	return (res);
 }
@@ -98,9 +98,9 @@ int			read_int(int nb)
 	int     res;
     int     endian;
 
-    endian = is_big_endian(NULL);
+    endian = need_change_endian(NULL);
 	res = nb;
-	if (endian & OPT_BIG_ENDIAN)
+	if (endian)
 		reverse_endian(&res, sizeof(int));
 	return (res);
 }
